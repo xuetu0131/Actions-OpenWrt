@@ -60,10 +60,18 @@ jobs:
         df -hT $PWD
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-    - name: Install OpenClash
+
+    - name: luci-app-nut
       run: |
-        git clone --depth 1 -b master --single-branch https://github.com/vernesong/OpenClash.git && mv OpenClash/luci-app-openclash openwrt/package/luci-app-openclash
-        
+        mkdir openwrt/package/luci-app-nut
+        cd openwrt/package/luci-app-nut
+        git init
+        git remote add -f origin https://github.com/openwrt/luci.git
+        git config core.sparsecheckout true
+        echo "applications/luci-app-nut" >> .git/info/sparse-checkout
+        git pull origin master
+        git branch --set-upstream-to=origin/master master
+    
     - name: Load custom feeds
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
